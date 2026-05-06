@@ -2,8 +2,9 @@
 
 Artifacts accompanying the SkillLens paper submission: per-skill evaluation
 reports (utility + security) across eight harness × model runs, the
-constructed judge-item task suite, and (forthcoming) replayable execution
-traces.
+constructed judge-item task suite, the aggregate CSV / index / SHA-256
+checksums, and a search-first browser UI over all of it. Full per-trial
+trajectories are scheduled for a separate post-review release (see below).
 
 > **Anonymous review build.** This repository is maintained for the duration of
 > peer review. All identifying information (author names, affiliations, contact
@@ -24,7 +25,8 @@ The site provides:
   binary judge items and per-item rationales (`wi_skills` vs `wo_skills`).
 - A **run matrix** showing which harnesses and models cover which evaluation
   axis (utility, security, or both).
-- A **traces** placeholder for the upcoming sandbox replay artifacts.
+- A **traces** placeholder reserved for the post-review trajectory bundle
+  (see "Trajectory release timing" below).
 
 ## Layout
 
@@ -37,7 +39,8 @@ docs/
 └── data/
     ├── index.json     # all skills × all runs (light index)
     ├── stats.json     # aggregate statistics
-    └── skills/        # 226 per-skill files (utility details + security)
+    ├── skills/        # 227 per-skill files (utility details + security)
+    └── checksums.txt  # SHA-256 over every published file in this tree
 ```
 
 ## Sanitization
@@ -58,9 +61,39 @@ to retain benchmark transparency. Some skill names and finding texts may
 reference upstream tooling whose names happen to match an anonymized owner;
 this is the skill's own behavior under test, not an identity leak.
 
+## Trajectory release timing
+
+The artifacts published here cover the **evaluation outcomes** of the
+227-skill × 8-run sweep — what each LLM judge concluded, scored against
+the constructed task suite, with full integrity checksums. They are
+sufficient to evaluate the methodology and reproduce the headline numbers
+when paired with the published evaluator code.
+
+Full per-trial trajectories — the raw `trajectory.json`, agent stdout,
+verifier output, and Harbor sandbox state for each rollout — are not
+included in this repository. Two reasons:
+
+1. **Size.** The unpacked corpus is ~150–300 GB. A bundled, compressed
+   release on GitHub is workable but not appropriate inside an active
+   review repository.
+2. **Sanitization audit.** Per-trial output requires an additional
+   sanitization pass beyond what summary JSONs already received
+   (mock-network capture logs, transient sandbox API endpoints,
+   container-internal absolute paths). That audit is best done with
+   the de-anonymized author identity available, so reviewers and
+   downstream users can trace the audit decisions back to a real
+   maintainer rather than a placeholder account.
+
+The trajectory bundle will be released as a companion download
+(GitHub Release attached to this repository) **after the review period
+concludes**. Reviewers do not need it to assess the paper's claims:
+the per-skill JSONs under `docs/data/skills/*.json` already carry the
+LLM-judge verdicts and capability-dimension scoring.
+
 ## Related
 
-- Project page: https://anonyy-coder.github.io/
+- Project page: https://anonyy-coder.github.io/SkillLens/
+- Code framework: https://github.com/anonyy-coder/SkillLens
 
 ## License
 
