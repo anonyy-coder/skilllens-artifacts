@@ -27,17 +27,24 @@
   // ---------------------------------------------------------------------------
   // Boot
   // ---------------------------------------------------------------------------
+  const fetchJson = async (url) => {
+    const r = await fetch(url, { credentials: "omit" });
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText} for ${url}`);
+    return r.json();
+  };
+
   async function boot() {
     try {
       const [index, stats] = await Promise.all([
-        fetch("data/index.json").then(r => r.json()),
-        fetch("data/stats.json").then(r => r.json()),
+        fetchJson("data/index.json"),
+        fetchJson("data/stats.json"),
       ]);
       state.index = index;
       state.stats = stats;
     } catch (e) {
       console.error("Failed to load data", e);
-      $("#lens-empty").textContent = "Failed to load data/index.json — check the deployment.";
+      const el = $("#lens-empty");
+      if (el) el.textContent = `Failed to load index/stats: ${e.message}`;
       return;
     }
 
@@ -169,10 +176,10 @@
       skill = state.skillCache.get(name);
     } else {
       try {
-        skill = await fetch(meta.file).then(r => r.json());
+        skill = await fetchJson(meta.file);
         state.skillCache.set(name, skill);
       } catch (e) {
-        $("#lens-view").innerHTML = `<div class="lens-empty">Failed to load ${esc(meta.file)}.</div>`;
+        $("#lens-view").innerHTML = `<div class="lens-empty">Failed to load ${esc(meta.file)} — ${esc(e.message)}</div>`;
         return;
       }
     }
