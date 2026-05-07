@@ -92,7 +92,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Lookup form
+  // Lookup form (with debounce + keyboard navigation)
   // ---------------------------------------------------------------------------
   function wireLookup() {
     const form = $("#lookup-form");
@@ -100,12 +100,14 @@
     const opts = $("#lookup-options");
 
     const allSkills = state.index.skills;
+    let currentMatches = [];
+    let activeIdx = -1;
+    let debounceTimer = null;
+
     const findMatches = (q) => {
       q = q.trim().toLowerCase();
       if (!q) return [];
-      const exact = [];
-      const prefix = [];
-      const sub = [];
+      const exact = [], prefix = [], sub = [];
       for (const s of allSkills) {
         const n = s.name.toLowerCase();
         if (n === q) exact.push(s);
@@ -116,29 +118,93 @@
     };
 
     const renderOptions = (matches) => {
-      if (!matches.length) { opts.classList.remove("show"); opts.innerHTML = ""; return; }
-      opts.innerHTML = matches.map(s => `
-        <div class="lookup-option" data-skill="${esc(s.name)}">
+      currentMatches = matches;
+      activeIdx = matches.length ? 0 : -1;
+      if (!matches.length) {
+        opts.classList.remove("show");
+        opts.innerHTML = "";
+        input.setAttribute("aria-expanded", "false");
+        input.removeAttribute("aria-activedescendant");
+        return;
+      }
+      opts.innerHTML = matches.map((s, i) => `
+        <div class="lookup-option${i === activeIdx ? " is-active" : ""}"
+             id="lookup-opt-${i}"
+             role="option"
+             aria-selected="${i === activeIdx}"
+             data-skill="${esc(s.name)}">
           <span class="name">${esc(s.name)}</span>
           <span class="meta">${esc(s.category || "—")} · ${esc(s.owner || "—")} · ${s.n_runs} runs</span>
         </div>
       `).join("");
       opts.classList.add("show");
+      input.setAttribute("aria-expanded", "true");
+      if (activeIdx >= 0) input.setAttribute("aria-activedescendant", `lookup-opt-${activeIdx}`);
     };
 
-    input.addEventListener("input", () => renderOptions(findMatches(input.value)));
-    input.addEventListener("focus", () => { if (input.value) renderOptions(findMatches(input.value)); });
-    input.addEventListener("blur", () => setTimeout(() => opts.classList.remove("show"), 120));
+    const updateActive = (delta) => {
+      if (!currentMatches.length) return;
+      activeIdx = (activeIdx + delta + currentMatches.length) % currentMatches.length;
+      $$(".lookup-option", opts).forEach((el, i) => {
+        const on = i === activeIdx;
+        el.classList.toggle("is-active", on);
+        el.setAttribute("aria-selected", on);
+      });
+      input.setAttribute("aria-activedescendant", `lookup-opt-${activeIdx}`);
+      const el = opts.children[activeIdx];
+      if (el) el.scrollIntoView({ block: "nearest" });
+    };
 
-    opts.addEventListener("click", (e) => {
+    const debouncedRender = () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => renderOptions(findMatches(input.value)), 120);
+    };
+
+    input.addEventListener("input", debouncedRender);
+    input.addEventListener("focus", () => { if (input.value) debouncedRender(); });
+    input.addEventListener("blur", () => setTimeout(() => {
+      opts.classList.remove("show");
+      input.setAttribute("aria-expanded", "false");
+    }, 120));
+
+    input.addEventListener("keydown", (e) => {
+      if (!opts.classList.contains("show") && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+        debouncedRender();
+        return;
+      }
+      switch (e.key) {
+        case "ArrowDown": e.preventDefault(); updateActive(+1); break;
+        case "ArrowUp":   e.preventDefault(); updateActive(-1); break;
+        case "Enter":
+          if (activeIdx >= 0 && currentMatches[activeIdx]) {
+            e.preventDefault();
+            selectSkill(currentMatches[activeIdx].name);
+            opts.classList.remove("show");
+            input.blur();
+          }
+          break;
+        case "Escape":
+          opts.classList.remove("show");
+          input.setAttribute("aria-expanded", "false");
+          input.blur();
+          break;
+      }
+    });
+
+    opts.addEventListener("mousedown", (e) => {
+      // mousedown (not click) so we beat the input blur handler
       const tgt = e.target.closest(".lookup-option");
-      if (tgt) selectSkill(tgt.dataset.skill);
+      if (tgt) {
+        e.preventDefault();
+        selectSkill(tgt.dataset.skill);
+        opts.classList.remove("show");
+        input.blur();
+      }
     });
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const q = input.value.trim();
-      const matches = findMatches(q);
+      const matches = findMatches(input.value);
       if (matches[0]) selectSkill(matches[0].name);
     });
 
@@ -169,6 +235,7 @@
       return;
     }
     $("#lens-view").dataset.state = "loading";
+    $("#lens-view").setAttribute("aria-busy", "true");
     $("#lens-view").innerHTML = `<div class="lens-empty">Loading ${esc(name)} …</div>`;
 
     let skill;
@@ -204,6 +271,7 @@
   function renderLens(skill) {
     const root = $("#lens-view");
     root.dataset.state = "ready";
+    root.setAttribute("aria-busy", "false");
 
     const runEntries = state.index.runs
       .map(r => skill.runs[r.id] ? { meta: r, data: skill.runs[r.id] } : null)

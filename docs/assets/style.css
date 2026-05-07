@@ -721,10 +721,46 @@ footer ul a:hover { color: var(--fg); }
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 960px) {
+  /* keep hero search usable on narrow screens — single accent column */
+  .lens-runs-grid { grid-template-columns: 1fr; padding: 18px 18px; }
+  .run-matrix     { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 720px) {
   .topnav a:not(.cta) { display: none; }
-  .foot-grid { grid-template-columns: 1fr 1fr; }
+  .topbar { padding: 0 16px; }
+  .page { padding: 0 16px; }
+  section { padding: 56px 0 48px; }
+  .foot-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
   .judge-item { grid-template-columns: 56px 1fr; }
+  .judge-item .scores { grid-template-columns: 1fr; }
   .trace-row { grid-template-columns: 1fr; gap: 6px; }
   .trace-row .meta { justify-self: start; }
+  .hero h1 { font-size: clamp(32px, 9vw, 44px); }
+  .lens-head { padding: 16px 18px 14px; }
+  .lens-head .name { font-size: 22px; }
+  /* full-width download buttons stack tidily on phones */
+  .download-btn, .download-btn.alt { width: 100%; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .lookup-form input[type="search"] { padding: 16px 12px; font-size: 15px; }
+  .lookup-form button { padding: 0 16px; font-size: 12.5px; }
+  .lookup-form .icon { padding: 0 4px 0 14px; font-size: 18px; }
+  .hero-mini-stats { gap: 4px 10px; font-size: 11px; }
+  .hero-mini-stats .sep { display: none; }
+  .banner-anonymous { font-size: 11.5px; padding: 8px 12px; }
+  .scenario-block-head { gap: 6px; padding: 10px 14px; }
+  .judge-item { padding: 10px 14px; }
+  .judge-item .crit { font-size: 12.5px; }
+  .foot-grid { grid-template-columns: 1fr; }
+  /* prevent any wide table from breaking layout */
+  main { overflow-x: hidden; }
+}
+
+/* prefers-reduced-motion: respect the OS-level setting (a11y) */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }

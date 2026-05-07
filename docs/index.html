@@ -7,12 +7,28 @@
   <meta name="description" content="SkillLens artifacts: data, evaluation reports, and constructed task suites for 227 skills under double-blind review.">
   <meta name="robots" content="noindex,nofollow">
   <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none';">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,8 12,75 30,62 50,28' fill='%23E8EAEE'/><polygon points='50,8 88,75 70,62 50,28' fill='%237C8088'/><polygon points='12,75 88,75 70,62 30,62' fill='%23363A40'/></svg>">
   <link rel="stylesheet" href="assets/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<noscript>
+  <style>.noscript-fallback{padding:24px;border:1px solid #F59E0B;background:rgba(245,158,11,0.08);color:#F2F4F7;font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;border-radius:6px;line-height:1.55} .noscript-fallback a{color:#22C55E;text-decoration:underline}</style>
+  <div class="noscript-fallback">
+    <strong style="color:#F59E0B">// JavaScript required</strong> for the interactive skill explorer.
+    The underlying data is plain JSON / CSV and is fully usable without the page:
+    <ul>
+      <li><a href="data/index.json">data/index.json</a> — 227 skills × 8 runs index (~36 KB)</li>
+      <li><a href="data/stats.json">data/stats.json</a> — aggregate statistics</li>
+      <li><a href="data/aggregate.csv">data/aggregate.csv</a> — long-format CSV (1812 rows × 28 cols)</li>
+      <li><a href="data/skills/">data/skills/</a> — per-skill detail JSON files</li>
+    </ul>
+  </div>
+</noscript>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -72,9 +88,13 @@
         <span class="icon" aria-hidden="true">⌕</span>
         <input id="lookup-input"
                type="search"
-               placeholder="docx · boiler · mcp-builder · …"
+               placeholder="docx · boiler · academic · …"
                autocomplete="off"
                spellcheck="false"
+               role="combobox"
+               aria-expanded="false"
+               aria-autocomplete="list"
+               aria-controls="lookup-options"
                aria-label="Search 227 skills">
         <button type="submit">Open →</button>
       </form>
@@ -112,7 +132,8 @@
 
   <!-- ==================== LENS VIEW (skill detail) ==================== -->
   <section class="reveal" id="explorer" style="padding-top: 16px;">
-    <div class="lens-view" id="lens-view" data-state="empty">
+    <div class="lens-view" id="lens-view" data-state="empty"
+         aria-live="polite" aria-busy="false" aria-label="Skill evaluation surface">
       <div class="lens-empty" id="lens-empty">Select a skill above to inspect its full evaluation surface.</div>
     </div>
   </section>
@@ -142,7 +163,8 @@
         explorer above, then expand the panel below to see the full judge sheet that scored it.
       </p>
     </header>
-    <div id="task-view" class="task-view" data-state="empty">
+    <div id="task-view" class="task-view" data-state="empty"
+         aria-live="polite" aria-label="Constructed judge sheet for selected skill">
       <div class="task-empty">No skill selected. The judge sheet for whichever skill you open will appear here.</div>
     </div>
   </section>
@@ -206,13 +228,14 @@
           <div class="cite-card download-card">
             <h4>Reproduce</h4>
             <p class="desc">
-              Index of all 227 skills with category, anon-owner, and evaluation runs. Per-skill
-              files contain every judge item and every (run × scenario) result, sanitized for
-              double-blind review.
+              Long-format CSV (one row per <code>skill × run</code>) for direct loading into
+              pandas / R / DuckDB. Per-skill JSON files contain every judge item and every
+              <code>(run × scenario)</code> result, sanitized for double-blind review.
             </p>
-            <a class="download-btn" href="data/index.json" download>Download index.json</a>
-            <a class="download-btn alt" href="data/stats.json" download>Download stats.json</a>
-            <p class="meta">schema <code>skilllens_artifacts_index_v1</code> · frozen 2026-05-07</p>
+            <a class="download-btn" href="data/aggregate.csv" download>Download aggregate.csv</a>
+            <a class="download-btn alt" href="data/index.json" download>index.json</a>
+            <a class="download-btn alt" href="data/stats.json" download>stats.json</a>
+            <p class="meta">1,812 rows × 28 cols · schema <code>skilllens_artifacts_v1</code> · frozen 2026-05-07</p>
           </div>
         </div>
       </div>
@@ -249,8 +272,9 @@
     <div>
       <h5>Reproduce</h5>
       <ul>
-        <li><a href="data/index.json" download>Download index.json</a></li>
-        <li><a href="data/stats.json" download>Download stats.json</a></li>
+        <li><a href="data/aggregate.csv" download>aggregate.csv (1812 rows)</a></li>
+        <li><a href="data/index.json" download>index.json</a></li>
+        <li><a href="data/stats.json" download>stats.json</a></li>
       </ul>
     </div>
   </div>
