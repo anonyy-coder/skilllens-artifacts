@@ -25,6 +25,7 @@
       <li><a href="data/index.json">data/index.json</a> — 227 skills × 8 runs index (~36 KB)</li>
       <li><a href="data/stats.json">data/stats.json</a> — aggregate statistics</li>
       <li><a href="data/aggregate.csv">data/aggregate.csv</a> — long-format CSV (1812 rows × 28 cols)</li>
+      <li><a href="data/checksums.txt">data/checksums.txt</a> — SHA-256 manifest for all 229 artifact files</li>
       <li><a href="data/skills/">data/skills/</a> — per-skill detail JSON files</li>
     </ul>
   </div>
@@ -235,7 +236,11 @@
             <a class="download-btn" href="data/aggregate.csv" download>Download aggregate.csv</a>
             <a class="download-btn alt" href="data/index.json" download>index.json</a>
             <a class="download-btn alt" href="data/stats.json" download>stats.json</a>
-            <p class="meta">1,812 rows × 28 cols · schema <code>skilllens_artifacts_v1</code> · frozen 2026-05-07</p>
+            <a class="download-btn alt" href="data/checksums.txt">checksums.txt</a>
+            <p class="meta">
+              1,812 rows × 28 cols · schema <code>skilllens_artifacts_v1</code> · frozen 2026-05-07.
+              Verify any file with <code>sha256sum -c checksums.txt</code>.
+            </p>
           </div>
         </div>
       </div>
@@ -275,6 +280,7 @@
         <li><a href="data/aggregate.csv" download>aggregate.csv (1812 rows)</a></li>
         <li><a href="data/index.json" download>index.json</a></li>
         <li><a href="data/stats.json" download>stats.json</a></li>
+        <li><a href="data/checksums.txt">checksums.txt (sha256)</a></li>
       </ul>
     </div>
   </div>

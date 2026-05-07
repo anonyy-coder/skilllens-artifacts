@@ -30,7 +30,11 @@
   const fetchJson = async (url) => {
     const r = await fetch(url, { credentials: "omit" });
     if (!r.ok) throw new Error(`${r.status} ${r.statusText} for ${url}`);
-    return r.json();
+    try {
+      return await r.json();
+    } catch (e) {
+      throw new Error(`Malformed JSON from ${url}: ${e.message}`);
+    }
   };
 
   async function boot() {
