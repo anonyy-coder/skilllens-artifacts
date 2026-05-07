@@ -1,6 +1,7 @@
-# SkillLens — Data
+# SkillLens — Artifacts
 
-Data and visualizations accompanying the SkillLens paper submission.
+Artifacts accompanying the SkillLens paper submission: data traces, results,
+figures, and supplementary materials.
 
 > **Anonymous review build.** This repository is maintained for the duration of
 > peer review. All identifying information (author names, affiliations, contact
@@ -9,12 +10,15 @@ Data and visualizations accompanying the SkillLens paper submission.
 
 ## Contents
 
-To be populated as the submission is prepared:
+Populated incrementally as the submission is prepared. Planned layout:
 
+- `traces/` — execution / interaction traces
 - `data/` — released datasets and splits
 - `results/` — quantitative results (CSV / JSON)
 - `figures/` — figure source files referenced in the paper
-- `viewer/` — interactive data viewer (if applicable)
+- `viewer/` — interactive viewer (if applicable)
+
+The directory structure may evolve before the camera-ready version.
 
 ## Related
 
